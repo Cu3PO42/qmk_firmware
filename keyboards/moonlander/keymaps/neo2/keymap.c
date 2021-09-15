@@ -67,6 +67,79 @@ enum tap_dance_codes {
   DANCE_2,
 };
 
+#define ko_make_shifted(trigger_key_, replacement_key_) \
+  ko_make_with_layers(MOD_MASK_SHIFT, trigger_key_, replacement_key_, 1)
+#define ko_make_shifted_keep_shift(trigger_key_, replacement_key_) \
+  ((const key_override_t){                                                              \
+    .trigger_mods                           = MOD_MASK_SHIFT,                           \
+    .layers                                 = 1,                                        \
+    .suppressed_mods                        = 0,                                        \
+    .options                                = ko_options_default,                       \
+    .negative_mod_mask                      = 0,                                        \
+    .custom_action                          = NULL,                                     \
+    .context                                = NULL,                                     \
+    .trigger                                = (trigger_key_),                           \
+    .replacement                            = (replacement_key_),                       \
+    .enabled                                = NULL                                      \
+  })
+#define ko_make_shifted_unicode(trigger_key_, codepoint) \
+  ((const key_override_t){                                                              \
+    .trigger_mods                           = MOD_MASK_SHIFT,                           \
+    .layers                                 = 1,                                        \
+    .suppressed_mods                        = MOD_MASK_SHIFT,                           \
+    .options                                = ko_options_default,                       \
+    .negative_mod_mask                      = 0,                                        \
+    .custom_action                          = &send_override_unicode,                   \
+    .context                                = (void*)(codepoint),                       \
+    .trigger                                = (trigger_key_),                           \
+    .replacement                            = KC_NO,                                    \
+    .enabled                                = NULL                                      \
+  })
+
+bool send_override_unicode(bool activated, void *context) {
+  if (activated) {
+    uint32_t codepoint = (uint32_t)context;
+    register_unicode(codepoint);
+  }
+
+  return true;
+}
+
+const key_override_t circ_override = ko_make_shifted_unicode(DE_CIRC, 0x030C); //
+const key_override_t s1_override = ko_make_shifted_keep_shift(KC_1, DE_CIRC); // °
+const key_override_t s2_override = ko_make_shifted_keep_shift(KC_2, KC_3); // §
+const key_override_t s3_override = ko_make_shifted_unicode(KC_3, 0x2113); // ℓ
+const key_override_t s4_override = ko_make_shifted_unicode(KC_4, 0x00BB); // »
+const key_override_t s5_override = ko_make_shifted_unicode(KC_5, 0x00AB); // «
+const key_override_t s6_override = ko_make_shifted_keep_shift(KC_6, KC_4); // $
+const key_override_t s7_override = ko_make_shifted(KC_7, ALGR(KC_E)); // €
+const key_override_t s8_override = ko_make_shifted_unicode(KC_8, 0x201E); // „
+const key_override_t s9_override = ko_make_shifted_unicode(KC_9, 0x201C); // „
+const key_override_t s0_override = ko_make_shifted_unicode(KC_0, 0x201D); // ”
+const key_override_t sSS_override = ko_make_shifted_unicode(DE_SS, 0x2014); // —
+// TODO: ` to ¸ UC(0x327), problematic because the key we're overriding always needs shift to be produced
+// TODO: ´ to ~ UC(0x303), problematic because the key we're overriding + shift is used in different situations (i.e. one above)
+const key_override_t sComma_override = ko_make_shifted_unicode(KC_COMMA, 0x2013); // –
+const key_override_t sDot_override = ko_make_shifted_unicode(RALT_T(KC_DOT), 0x2022); // •
+
+const key_override_t **key_overrides = (const key_override_t *[]){
+  &circ_override,
+  &s1_override,
+  &s2_override,
+  &s3_override,
+  &s4_override,
+  &s5_override,
+  &s6_override,
+  &s7_override,
+  &s8_override,
+  &s9_override,
+  &s0_override,
+  &sSS_override,
+  &sComma_override,
+  &sDot_override,
+  NULL // Must terminate this arra with NULL
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_moonlander(
     DE_CIRC,        KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           KC_TRANSPARENT,                                 TG(5),          KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           DE_MINS,
@@ -78,7 +151,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [1] = LAYOUT_moonlander(
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
-    KC_TRANSPARENT, KC_TRANSPARENT, DE_UNDS,        DE_LBRC,        DE_RBRC,        ST_MACRO_0,     KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_EXLM,        DE_LESS,        DE_MORE,        DE_EQL,         DE_AMPR,        KC_TRANSPARENT,
+    KC_TRANSPARENT, UC(0x2026),     DE_UNDS,        DE_LBRC,        DE_RBRC,        ST_MACRO_0,     KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_EXLM,        DE_LESS,        DE_MORE,        DE_EQL,         DE_AMPR,        KC_TRANSPARENT,
     KC_TRANSPARENT, DE_BSLS,        DE_SLSH,        DE_LCBR,        DE_RCBR,        DE_ASTR,        KC_TRANSPARENT,                                                                 KC_TRANSPARENT, DE_QST,         DE_LPRN,        DE_RPRN,        DE_MINS,        DE_COLN,        DE_AT,
     KC_TRANSPARENT, DE_HASH,        DE_DLR,         DE_PIPE,        DE_TILD,        ST_MACRO_1,                                     DE_PLUS,        DE_PERC,        DE_DQOT,        DE_QUOT,        DE_SCLN,        KC_TRANSPARENT,
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                                                                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
@@ -117,11 +190,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_SPACE,       KC_DELETE,      KC_TRANSPARENT,                 KC_TRANSPARENT, KC_ENTER,       KC_BSPACE
   ),
   [6] = LAYOUT_moonlander(
+<<<<<<< HEAD
     KC_TRANSPARENT, KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,          KC_F6,                                          KC_TRANSPARENT, KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,         KC_F11,
     KC_TRANSPARENT, KC_AUDIO_VOL_UP,KC_MS_WH_LEFT,  KC_MS_UP,       KC_MS_WH_RIGHT, KC_MEDIA_PREV_TRACK,KC_TRANSPARENT,                                 KC_TRANSPARENT, RGB_MOD,        RGB_SPD,        RGB_SPI,        RGB_VAD,        RGB_VAI,        KC_F12,
     KC_TRANSPARENT, KC_AUDIO_VOL_DOWN,KC_MS_LEFT,     KC_MS_DOWN,     KC_MS_RIGHT,    KC_MEDIA_NEXT_TRACK,KC_TRANSPARENT,                                                                 KC_TRANSPARENT, RGB_SLD,        KC_MS_BTN1,     KC_MS_BTN2,     RGB_HUD,        RGB_HUI,        MU_TOG,
     KC_TRANSPARENT, KC_AUDIO_MUTE,  KC_MS_WH_UP,    KC_MS_WH_DOWN,  KC_MEDIA_STOP,  KC_MEDIA_PLAY_PAUSE,                                RGB_TOG,        TOGGLE_LAYER_COLOR,HSV_0_255_255,  RGB_SAD,        RGB_SAI,        MU_MOD,
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                                                                                 KC_TRANSPARENT, HSV_86_255_128, HSV_172_255_255,AU_ON,          AU_OFF,         RESET,
+=======
+    UC_M_WC       , KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,          KC_F6,                                          KC_TRANSPARENT, KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,         KC_F11,
+    UC_M_LN       , KC_AUDIO_VOL_UP,KC_MS_WH_LEFT,  KC_MS_UP,       KC_MS_WH_RIGHT, KC_MEDIA_PREV_TRACK,KC_TRANSPARENT,                                 KC_TRANSPARENT, RGB_MOD,        RGB_SPD,        RGB_SPI,        RGB_VAD,        RGB_VAI,        KC_F12,
+    UC_M_MA       , KC_AUDIO_VOL_DOWN,KC_MS_LEFT,     KC_MS_DOWN,     KC_MS_RIGHT,    KC_MEDIA_NEXT_TRACK,KC_TRANSPARENT,                                                                 KC_TRANSPARENT, RGB_SLD,        KC_MS_BTN1,     KC_MS_BTN2,     RGB_HUD,        RGB_HUI,        MU_TOG,
+    KC_TRANSPARENT, KC_AUDIO_MUTE,  KC_MS_WH_UP,    KC_MS_WH_DOWN,  KC_MEDIA_STOP,  KC_MEDIA_PLAY_PAUSE,                                RGB_TOG,        TOGGLE_LAYER_COLOR,HSV_0_255_255,  RGB_SAD,        RGB_SAI,        MU_MOD,
+    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                                                                                 KC_TRANSPARENT, HSV_86_255_128, HSV_172_255_255,AU_ON,          AU_OFF,         RESET,
+>>>>>>> 51ca9d2fa2 (Implement most of layer 2)
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
   ),
 };

@@ -117,8 +117,8 @@ const key_override_t s8_override = ko_make_shifted_unicode(KC_8, 0x201E); // „
 const key_override_t s9_override = ko_make_shifted_unicode(KC_9, 0x201C); // „
 const key_override_t s0_override = ko_make_shifted_unicode(KC_0, 0x201D); // ”
 const key_override_t sSS_override = ko_make_shifted_unicode(DE_SS, 0x2014); // —
-// TODO: ` to ¸ UC(0x327), problematic because the key we're overriding always needs shift to be produced
-// TODO: ´ to ~ UC(0x303), problematic because the key we're overriding + shift is used in different situations (i.e. one above)
+const key_override_t sGrave_override = ko_make_shifted_unicode(DE_GRV, 0x0327); // ¸
+const key_override_t sAcute_override = ko_make_shifted_unicode(DE_ACUT, 0x0303); // ~
 const key_override_t sComma_override = ko_make_shifted_unicode(KC_COMMA, 0x2013); // –
 const key_override_t sDot_override = ko_make_shifted_unicode(RALT_T(KC_DOT), 0x2022); // •
 
@@ -135,6 +135,8 @@ const key_override_t **key_overrides = (const key_override_t *[]){
   &s9_override,
   &s0_override,
   &sSS_override,
+  &sGrave_override,
+  &sAcute_override,
   &sComma_override,
   &sDot_override,
   NULL // Must terminate this arra with NULL

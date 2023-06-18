@@ -26,6 +26,9 @@
 #include "keymap_estonian.h"
 #include "keymap_belgian.h"
 #include "keymap_us_international.h"
+#include "keymap_croatian.h"
+#include "keymap_turkish_q.h"
+#include "keymap_slovak.h"
 
 #define KC_MAC_UNDO LGUI(KC_Z)
 #define KC_MAC_CUT LGUI(KC_X)
@@ -42,6 +45,7 @@
 #define NO_BSLS_ALT KC_EQUAL
 #define LSA_T(kc) MT(MOD_LSFT | MOD_LALT, kc)
 #define BP_NDSH_MAC ALGR(KC_8)
+#define SE_SECT_MAC ALGR(KC_6)
 #define MOON_LED_LEVEL LED_LEVEL
 
 enum custom_keycodes {
@@ -50,9 +54,11 @@ enum custom_keycodes {
   HSV_86_255_128,
   HSV_172_255_255,
   ST_MACRO_0,
+  ST_MACRO_1,
   DE_LSPO,
   DE_RSPC,
 };
+
 
 
 enum tap_dance_codes {
@@ -66,15 +72,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     DE_CIRC,        KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           KC_TRANSPARENT,                                 TG(5),          KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           DE_MINS,        
     KC_TRANSPARENT, TD(DANCE_0),    TD(DANCE_1),    KC_L,           TD(DANCE_2),    KC_W,           KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_K,           KC_H,           KC_G,           KC_F,           KC_Q,           DE_SS,          
     MO(1),          KC_U,           KC_I,           KC_A,           KC_E,           KC_O,           KC_TAB,                                                                         KC_MEH,         KC_S,           KC_N,           KC_R,           KC_T,           KC_D,           LT(1,DE_Y),     
-    KC_LSHIFT,      LCTL_T(DE_UE),  LALT_T(DE_OE),  DE_AE,          KC_P,           DE_Z,                                           KC_B,           KC_M,           KC_COMMA,       RALT_T(KC_DOT), RCTL_T(KC_J),   KC_RSHIFT,      
-    KC_TRANSPARENT, KC_LCTRL,       KC_LALT,        OSL(6),         MO(2),          KC_HYPR,                                                                                                        KC_ESCAPE,      LSFT(DE_GRV),   DE_ACUT,        KC_RALT,        KC_RCTRL,       KC_TRANSPARENT, 
-    LSFT_T(KC_SPACE),LT(1,KC_DELETE),KC_LGUI,                        MO(2),          LT(1,KC_ENTER), RSFT_T(KC_BSPACE)
+    KC_LSHIFT,      MT(MOD_LCTL, DE_UE),MT(MOD_LALT, DE_OE),DE_AE,          KC_P,           DE_Z,                                           KC_B,           KC_M,           KC_COMMA,       MT(MOD_RALT, KC_DOT),MT(MOD_RCTL, KC_J),KC_RSHIFT,      
+    KC_TRANSPARENT, KC_LCTRL,       KC_LALT,        OSL(6),         MO(2),          KC_HYPR,                                                                                                        KC_ESCAPE,      DE_GRV,         DE_ACUT,        KC_RALT,        KC_RCTRL,       KC_TRANSPARENT, 
+    MT(MOD_LSFT, KC_SPACE),LT(1,KC_DELETE),KC_LGUI,                        MO(2),          LT(1,KC_ENTER), MT(MOD_RSFT, KC_BSPACE)
   ),
   [1] = LAYOUT_moonlander(
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, 
-    KC_TRANSPARENT, KC_TRANSPARENT, DE_UNDS,        DE_LBRC,        DE_RBRC,        DE_CIRC,        KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_EXLM,        DE_LESS,        DE_MORE,        DE_EQL,         DE_AMPR,        KC_TRANSPARENT, 
+    KC_TRANSPARENT, KC_TRANSPARENT, DE_UNDS,        DE_LBRC,        DE_RBRC,        ST_MACRO_0,     KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_EXLM,        DE_LESS,        DE_MORE,        DE_EQL,         DE_AMPR,        KC_TRANSPARENT, 
     KC_TRANSPARENT, DE_BSLS,        DE_SLSH,        DE_LCBR,        DE_RCBR,        DE_ASTR,        KC_TRANSPARENT,                                                                 KC_TRANSPARENT, DE_QST,         DE_LPRN,        DE_RPRN,        DE_MINS,        DE_COLN,        DE_AT,          
-    KC_TRANSPARENT, DE_HASH,        DE_DLR,         DE_PIPE,        DE_TILD,        ST_MACRO_0,                                     DE_PLUS,        DE_PERC,        DE_DQOT,        DE_QUOT,        DE_SCLN,        KC_TRANSPARENT, 
+    KC_TRANSPARENT, DE_HASH,        DE_DLR,         DE_PIPE,        DE_TILD,        ST_MACRO_1,                                     DE_PLUS,        DE_PERC,        DE_DQOT,        DE_QUOT,        DE_SCLN,        KC_TRANSPARENT, 
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                                                                                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, 
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
   ),
@@ -120,12 +126,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 };
 
-extern bool g_suspend_state;
+
+
 extern rgb_config_t rgb_matrix_config;
 
 void keyboard_post_init_user(void) {
   rgb_matrix_enable();
 }
+
 
 const uint8_t PROGMEM ledmap[][DRIVER_LED_TOTAL][3] = {
     [0] = { {31,255,255}, {0,183,238}, {0,183,238}, {0,183,238}, {0,0,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,0,255}, {0,0,255}, {31,255,255}, {0,205,155}, {0,205,155}, {0,183,238}, {0,0,255}, {31,255,255}, {31,255,255}, {0,183,238}, {0,183,238}, {0,0,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,0,255}, {0,183,238}, {0,205,155}, {0,205,155}, {0,183,238}, {31,255,255} },
@@ -158,7 +166,10 @@ void set_layer_color(int layer) {
 }
 
 void rgb_matrix_indicators_user(void) {
-  if (g_suspend_state || keyboard_config.disable_layer_led) { return; }
+  if (rawhid_state.rgb_control) {
+      return;
+  }
+  if (keyboard_config.disable_layer_led) { return; }
   switch (biton32(layer_state)) {
     case 0:
       set_layer_color(0);
@@ -186,42 +197,54 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case ST_MACRO_0:
     if (record->event.pressed) {
-      SEND_STRING(SS_LSFT(SS_TAP(X_EQUAL)) SS_DELAY(100) SS_TAP(X_SPACE));
-
+      SEND_STRING(SS_TAP(X_GRAVE) SS_DELAY(100) SS_TAP(X_SPACE));
     }
     break;
-    case DE_LSPO:
-      perform_space_cadet(record, keycode, KC_LSFT, KC_LSFT, KC_8);
-      return false;
-    case DE_RSPC:
-      perform_space_cadet(record, keycode, KC_LSFT, KC_LSFT, KC_9);
-      return false;
+    case ST_MACRO_1:
+    if (record->event.pressed) {
+      SEND_STRING(SS_LSFT(SS_TAP(X_EQUAL)) SS_DELAY(100) SS_TAP(X_SPACE));
+    }
+    break;
+
     case RGB_SLD:
-      if (record->event.pressed) {
-        rgblight_mode(1);
-      }
-      return false;
+        if (rawhid_state.rgb_control) {
+            return false;
+        }
+        if (record->event.pressed) {
+            rgblight_mode(1);
+        }
+        return false;
     case HSV_0_255_255:
-      if (record->event.pressed) {
-        rgblight_mode(1);
-        rgblight_sethsv(0,255,255);
-      }
-      return false;
-    case HSV_86_255_128:
-      if (record->event.pressed) {
-        rgblight_mode(1);
-        rgblight_sethsv(86,255,128);
-      }
-      return false;
-    case HSV_172_255_255:
-      if (record->event.pressed) {
-        rgblight_mode(1);
-        rgblight_sethsv(172,255,255);
-      }
-      return false;
-  }
+        if (rawhid_state.rgb_control) {
+            return false;
+        }
+        if (record->event.pressed) {
+            rgblight_mode(1);
+            rgblight_sethsv(0,255,255);
+        }
+        return false;
+      case HSV_86_255_128:
+        if (rawhid_state.rgb_control) {
+            return false;
+        }
+        if (record->event.pressed) {
+            rgblight_mode(1);
+            rgblight_sethsv(86,255,128);
+        }
+        return false;
+      case HSV_172_255_255:
+        if (rawhid_state.rgb_control) {
+            return false;
+        }
+        if (record->event.pressed) {
+            rgblight_mode(1);
+            rgblight_sethsv(172,255,255);
+        }
+        return false;
+    }
   return true;
 }
+
 
 typedef struct {
     bool is_press_action;
@@ -365,4 +388,3 @@ qk_tap_dance_action_t tap_dance_actions[] = {
         [DANCE_1] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_1, dance_1_finished, dance_1_reset),
         [DANCE_2] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_2, dance_2_finished, dance_2_reset),
 };
-

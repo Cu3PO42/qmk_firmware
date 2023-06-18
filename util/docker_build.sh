@@ -19,7 +19,7 @@ if [ $# -gt 1 ]; then
 	exit 1
 fi
 
-# Allow $RUNTIME to be overriden by the user as an environment variable
+# Allow $RUNTIME to be overridden by the user as an environment variable
 # Else check if either docker or podman exit and set them as runtime
 # if none are found error out
 if [ -z "$RUNTIME" ]; then
@@ -36,7 +36,7 @@ if [ -z "$RUNTIME" ]; then
 		exit 2
 	fi
 fi
-	
+
 
 # Determine arguments
 if [ $# -eq 0 ]; then
@@ -51,6 +51,9 @@ else
 		errcho "$USAGE"
 		exit 1
 	fi
+fi
+if [ -z "$keyboard" ]; then
+	keyboard=all
 fi
 if [ -n "$target" ]; then
 	# IF we are using docker on non Linux and docker-machine isn't working print an error
@@ -78,5 +81,5 @@ fi
 	-e ALT_GET_KEYBOARDS=true \
 	-e SKIP_GIT="$SKIP_GIT" \
 	-e MAKEFLAGS="$MAKEFLAGS" \
-	qmkfm/base_container \
+	qmkfm/qmk_cli \
 	make "$keyboard${keymap:+:$keymap}${target:+:$target}"

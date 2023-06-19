@@ -54,30 +54,36 @@ void make_guess(void) {
     }
     if (setups_data.cnt_ff >= 2 && setups_data.cnt_04 >= 1) {
         setups_data.detected_os = OS_WINDOWS;
+        process_detected_host_os_user(setups_data.detected_os);
         return;
     }
     if (setups_data.count == setups_data.cnt_ff) {
         // Linux has 3 packets with 0xFF.
         setups_data.detected_os = OS_LINUX;
+        process_detected_host_os_user(setups_data.detected_os);
         return;
     }
     if (setups_data.count == 5 && setups_data.last_wlength == 0xFF && setups_data.cnt_ff == 1 && setups_data.cnt_02 == 2) {
         setups_data.detected_os = OS_MACOS;
+        process_detected_host_os_user(setups_data.detected_os);
         return;
     }
     if (setups_data.count == 4 && setups_data.cnt_ff == 0 && setups_data.cnt_02 == 2) {
         // iOS and iPadOS don't have the last 0xFF packet.
         setups_data.detected_os = OS_IOS;
+        process_detected_host_os_user(setups_data.detected_os);
         return;
     }
     if (setups_data.cnt_ff == 0 && setups_data.cnt_02 == 3 && setups_data.cnt_04 == 1) {
         // This is actually PS5.
         setups_data.detected_os = OS_LINUX;
+        process_detected_host_os_user(setups_data.detected_os);
         return;
     }
     if (setups_data.cnt_ff >= 1 && setups_data.cnt_02 == 0 && setups_data.cnt_04 == 0) {
         // This is actually Quest 2 or Nintendo Switch.
         setups_data.detected_os = OS_LINUX;
+        process_detected_host_os_user(setups_data.detected_os);
         return;
     }
 }
@@ -105,6 +111,8 @@ os_variant_t detected_host_os(void) {
 void erase_wlength_data(void) {
     memset(&setups_data, 0, sizeof(setups_data));
 }
+
+void __attribute__((weak)) process_detected_host_os_user(os_variant_t detected) {}
 #endif // OS_DETECTION_ENABLE
 
 #ifdef OS_DETECTION_DEBUG_ENABLE

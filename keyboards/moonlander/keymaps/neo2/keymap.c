@@ -29,6 +29,8 @@
 #include "keymap_croatian.h"
 #include "keymap_turkish_q.h"
 #include "keymap_slovak.h"
+#include "os_detection.h"
+#include "process_unicode_common.h"
 
 #define KC_MAC_UNDO LGUI(KC_Z)
 #define KC_MAC_CUT LGUI(KC_X)
@@ -472,3 +474,20 @@ qk_tap_dance_action_t tap_dance_actions[] = {
         [DANCE_1] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_1, dance_1_finished, dance_1_reset),
         [DANCE_2] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_2, dance_2_finished, dance_2_reset),
 };
+
+void process_detected_host_os_user(os_variant_t detected) {
+    switch (detected) {
+    case OS_LINUX:
+        set_unicode_input_mode(UC_LNX, false);
+        break;
+    case OS_WINDOWS:
+        set_unicode_input_mode(UC_WINC, false);
+        break;
+    case OS_MACOS:
+    case OS_IOS:
+        set_unicode_input_mode(UC_MAC, false);
+        break;
+    default:
+        break;
+    }
+}

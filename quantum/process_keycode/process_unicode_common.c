@@ -57,9 +57,10 @@ uint8_t get_unicode_input_mode(void) {
     return unicode_config.input_mode;
 }
 
-void set_unicode_input_mode(uint8_t mode) {
+void set_unicode_input_mode(uint8_t mode, bool persist) {
     unicode_config.input_mode = mode;
-    persist_unicode_input_mode();
+    if (persist)
+        persist_unicode_input_mode();
     dprintf("Unicode input mode set to: %u\n", unicode_config.input_mode);
 }
 
@@ -312,27 +313,27 @@ bool process_unicode_common(uint16_t keycode, keyrecord_t *record) {
                 audio_helper();
                 break;
             case UNICODE_MODE_MAC:
-                set_unicode_input_mode(UC_MAC);
+                set_unicode_input_mode(UC_MAC, true);
                 audio_helper();
                 break;
             case UNICODE_MODE_LNX:
-                set_unicode_input_mode(UC_LNX);
+                set_unicode_input_mode(UC_LNX, true);
                 audio_helper();
                 break;
             case UNICODE_MODE_WIN:
-                set_unicode_input_mode(UC_WIN);
+                set_unicode_input_mode(UC_WIN, true);
                 audio_helper();
                 break;
             case UNICODE_MODE_BSD:
-                set_unicode_input_mode(UC_BSD);
+                set_unicode_input_mode(UC_BSD, true);
                 audio_helper();
                 break;
             case UNICODE_MODE_WINC:
-                set_unicode_input_mode(UC_WINC);
+                set_unicode_input_mode(UC_WINC, true);
                 audio_helper();
                 break;
             case UNICODE_MODE_EMACS:
-                set_unicode_input_mode(UC_EMACS);
+                set_unicode_input_mode(UC_EMACS, true);
                 audio_helper();
                 break;
         }

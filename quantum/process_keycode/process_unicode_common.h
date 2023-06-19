@@ -79,7 +79,7 @@ extern unicode_config_t unicode_config;
 
 void    unicode_input_mode_init(void);
 uint8_t get_unicode_input_mode(void);
-void    set_unicode_input_mode(uint8_t mode);
+void    set_unicode_input_mode(uint8_t mode, bool persist);
 void    cycle_unicode_input_mode(int8_t offset);
 void    persist_unicode_input_mode(void);
 

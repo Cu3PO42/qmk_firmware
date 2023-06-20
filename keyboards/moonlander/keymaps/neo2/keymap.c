@@ -166,7 +166,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 // Layer 4
   [2] = LAYOUT_moonlander(
-    UC(0x02D9),     UC(0x00AA),     DE_RING,        UC(0x2116),     KC_NO,          UC(0x00B7),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00A3),     UC(0x00A4),     KC_TAB,         DE_SLSH,        DE_ASTR,        DE_MINS,
+    UC(0x0307),     UC(0x00AA),     DE_RING,        UC(0x2116),     KC_NO,          UC(0x00B7),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00A3),     UC(0x00A4),     KC_TAB,         DE_SLSH,        DE_ASTR,        DE_MINS,
     KC_TRANSPARENT, KC_PGUP,        KC_BSPACE,      KC_UP,          KC_DELETE,      KC_PGDOWN,      KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00A1),		KC_KP_7,        KC_KP_8,        KC_KP_9,        DE_PLUS,        UC(0x2212),
     KC_TRANSPARENT, KC_HOME,        KC_LEFT,        KC_DOWN,        KC_RIGHT,       KC_END,         KC_TRANSPARENT,                                                                 KC_TRANSPARENT, UC(0x00BF),		KC_KP_4,        KC_KP_5,        KC_KP_6,        KC_COMMA,       KC_DOT,
     KC_TRANSPARENT, KC_ESCAPE,      KC_TAB,         KC_INSERT,      KC_ENTER,       LCTL(KC_Z),                                     DE_COLN,        KC_KP_1,        KC_KP_2,        KC_KP_3,        DE_SCLN,        KC_TRANSPARENT,

@@ -20,8 +20,8 @@ enum custom_keycodes {
   HSV_0_255_255,
   HSV_86_255_128,
   HSV_172_255_255,
-  ST_MACRO_0,
-  ST_MACRO_1,
+  ST_CARRET,
+  ST_BTCK,
   DE_LSPO,
   DE_RSPC,
 };
@@ -150,9 +150,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Layer 3
   [LAYER_3_WIN] = LAYOUT_moonlander(
     UC(0x21BB),     UC(0x00B9),     UC(0x00B2),     UC(0x00B3),     UC(0x203A),     UC(0x2039),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00A2),     UC(0x00A5),     UC(0x201A),     UC(0x2018),     UC(0x2019),     KC_NO,
-    KC_TRANSPARENT, UC(0x2026),     DE_UNDS,        DE_LBRC,        DE_RBRC,        ST_MACRO_0,     KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_EXLM,        DE_LESS,        DE_MORE,        DE_EQL,         DE_AMPR,        UC(0x017F),
+    KC_TRANSPARENT, UC(0x2026),     DE_UNDS,        DE_LBRC,        DE_RBRC,        ST_CARRET,     KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_EXLM,        DE_LESS,        DE_MORE,        DE_EQL,         DE_AMPR,        UC(0x017F),
     KC_TRANSPARENT, DE_BSLS,        DE_SLSH,        DE_LCBR,        DE_RCBR,        DE_ASTR,        KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_QST,         DE_LPRN,        DE_RPRN,        DE_MINS,        DE_COLN,        DE_AT,
-    KC_TRANSPARENT, DE_HASH,        DE_DLR,         DE_PIPE,        DE_TILD,        ST_MACRO_1,                                     DE_PLUS,        DE_PERC,        DE_DQOT,        DE_QUOT,        DE_SCLN,        KC_TRANSPARENT,
+    KC_TRANSPARENT, DE_HASH,        DE_DLR,         DE_PIPE,        DE_TILD,        ST_BTCK,                                     DE_PLUS,        DE_PERC,        DE_DQOT,        DE_QUOT,        DE_SCLN,        KC_TRANSPARENT,
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                                                                                 KC_TRANSPARENT, UC(0x030A),     UC(0x0337), KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
   ),
@@ -272,13 +272,13 @@ void rgb_matrix_indicators_user(void) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
-    case ST_MACRO_0:
+    case ST_CARRET:
     if (record->event.pressed) {
       SEND_STRING(SS_TAP(X_GRAVE) SS_DELAY(10) SS_TAP(X_SPACE));
 
     }
     break;
-    case ST_MACRO_1:
+    case ST_BTCK:
     if (record->event.pressed) {
       SEND_STRING(SS_LSFT(SS_TAP(X_EQUAL)) SS_DELAY(10) SS_TAP(X_SPACE));
     }

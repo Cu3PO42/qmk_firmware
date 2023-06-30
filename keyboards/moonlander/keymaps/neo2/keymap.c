@@ -323,12 +323,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
-
-typedef struct {
-    bool is_press_action;
-    uint8_t step;
-} tap;
-
 enum {
     SINGLE_TAP = 1,
     SINGLE_HOLD,
@@ -337,8 +331,6 @@ enum {
     DOUBLE_SINGLE_TAP,
     MORE_TAPS
 };
-
-static tap dance_state[_DANCE_MAX];
 
 uint8_t dance_step(qk_tap_dance_state_t *state) {
     if (state->count == 1) {
@@ -352,46 +344,46 @@ uint8_t dance_step(qk_tap_dance_state_t *state) {
     return MORE_TAPS;
 }
 
-#define DANCE_ACTION(NAME_LC, NAME_UC, KC) \
-void on_dance_##NAME_LC(qk_tap_dance_state_t *state, void *user_data) { \
-    if(state->count == 3) { \
-        tap_code16(KC); \
-        tap_code16(KC); \
-        tap_code16(KC); \
-    } \
-    if(state->count > 3) { \
-        tap_code16(KC); \
-    } \
-} \
-\
-void dance_##NAME_LC##_finished(qk_tap_dance_state_t *state, void *user_data) { \
-    dance_state[DANCE_##NAME_UC].step = dance_step(state); \
-    switch (dance_state[DANCE_##NAME_UC].step) { \
-        case SINGLE_TAP: register_code16(KC); break; \
-        case SINGLE_HOLD: register_code16(LCTL(KC)); break; \
-        case DOUBLE_TAP: register_code16(KC); register_code16(KC); break; \
-        case DOUBLE_SINGLE_TAP: tap_code16(KC); register_code16(KC); \
-    } \
-} \
-\
-void dance_##NAME_LC##_reset(qk_tap_dance_state_t *state, void *user_data) { \
-    wait_ms(10); \
-    switch (dance_state[DANCE_##NAME_UC].step) { \
-        case SINGLE_TAP: unregister_code16(KC); break; \
-        case SINGLE_HOLD: unregister_code16(LCTL(KC)); break; \
-        case DOUBLE_TAP: unregister_code16(KC); break; \
-        case DOUBLE_SINGLE_TAP: unregister_code16(KC); break; \
-    } \
-    dance_state[DANCE_##NAME_UC].step = 0; \
+void on_dance(qk_tap_dance_state_t *state, void *user_data) {
+    uint16_t kc = (uint16_t)(uintptr_t)user_data;
+    if(state->count == 3) {
+        tap_code16(kc);
+        tap_code16(kc);
+        tap_code16(kc);
+    }
+    if(state->count > 3) {
+        tap_code16(kc);
+    }
 }
-DANCE_ACTION(cut, CUT, KC_X)
-DANCE_ACTION(paste, PASTE, KC_V)
-DANCE_ACTION(copy, COPY, KC_C)
+
+void dance_finished(qk_tap_dance_state_t *state, void *user_data) {
+    uint16_t kc = (uint16_t)(uintptr_t)user_data;
+    switch (dance_step(state)) {
+        case SINGLE_TAP: register_code16(kc); break;
+        case SINGLE_HOLD: register_code16(LCTL(kc)); break;
+        case DOUBLE_TAP: register_code16(kc); register_code16(kc); break;
+        case DOUBLE_SINGLE_TAP: tap_code16(kc); register_code16(kc);
+    }
+}
+
+void dance_reset(qk_tap_dance_state_t *state, void *user_data) {
+    wait_ms(10);
+    uint16_t kc = (uint16_t)(uintptr_t)user_data;
+    switch (dance_step(state)) {
+        case SINGLE_TAP: unregister_code16(kc); break;
+        case SINGLE_HOLD: unregister_code16(LCTL(kc)); break;
+        case DOUBLE_TAP: unregister_code16(kc); break;
+        case DOUBLE_SINGLE_TAP: unregister_code16(kc); break;
+    }
+}
+
+#define ACTION_CPC(code) \
+        { .fn = {on_dance, dance_finished, dance_reset}, .user_data = (void *)(code), }
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-        [DANCE_CUT] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_cut, dance_cut_finished, dance_cut_reset),
-        [DANCE_PASTE] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_paste, dance_paste_finished, dance_paste_reset),
-        [DANCE_COPY] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_copy, dance_copy_finished, dance_copy_reset),
+        [DANCE_CUT] = ACTION_CPC(KC_X),
+        [DANCE_PASTE] = ACTION_CPC(KC_V),
+        [DANCE_COPY] = ACTION_CPC(KC_C),
 };
 
 void process_detected_host_os_user(os_variant_t detected) {

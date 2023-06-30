@@ -61,12 +61,23 @@ enum custom_keycodes {
   DE_RSPC,
 };
 
-
-
 enum tap_dance_codes {
   DANCE_0,
   DANCE_1,
   DANCE_2,
+};
+
+enum LAYERS {
+    LAYER_1_WIN,
+    //LAYER_1_MAC,
+    // Layer 2 is handled using overrides
+    LAYER_3_WIN,
+    //LAYER_3_MAC,
+    LAYER_4,
+    LAYER_5,
+    LAYER_6,
+    LAYER_QWERTZ,
+    LAYER_MEDIA,
 };
 
 #define ko_make_shifted(trigger_key_, replacement_key_) \
@@ -74,7 +85,7 @@ enum tap_dance_codes {
 #define ko_make_shifted_keep_shift(trigger_key_, replacement_key_) \
   ((const key_override_t){                                                              \
     .trigger_mods                           = MOD_MASK_SHIFT,                           \
-    .layers                                 = 1,                                        \
+    .layers                                 = 1 << LAYER_1_WIN,                         \
     .suppressed_mods                        = 0,                                        \
     .options                                = ko_options_default,                       \
     .negative_mod_mask                      = 0,                                        \
@@ -87,7 +98,7 @@ enum tap_dance_codes {
 #define ko_make_shifted_unicode(trigger_key_, codepoint) \
   ((const key_override_t){                                                              \
     .trigger_mods                           = MOD_MASK_SHIFT,                           \
-    .layers                                 = 1,                                        \
+    .layers                                 = 1 << LAYER_1_WIN,                         \
     .suppressed_mods                        = MOD_MASK_SHIFT,                           \
     .options                                = ko_options_default,                       \
     .negative_mod_mask                      = 0,                                        \
@@ -144,19 +155,34 @@ const key_override_t **key_overrides = (const key_override_t *[]){
   NULL // Must terminate this arra with NULL
 };
 
+const uint16_t PROGMEM caps_combo[] = {KC_LSHIFT, KC_RSHIFT, COMBO_END};
+const uint16_t PROGMEM layer5_left_combo[] = {MO(LAYER_3_WIN), KC_LSHIFT, COMBO_END};
+const uint16_t PROGMEM layer5_right_combo[] = {LT(LAYER_3_WIN, DE_Y), KC_RSHIFT, COMBO_END};
+const uint16_t PROGMEM layer6_left_combo[] = {MO(LAYER_3_WIN), MO(LAYER_4), COMBO_END};
+const uint16_t PROGMEM layer6_right_combo[] = {LT(LAYER_3_WIN, DE_Y), MO(LAYER_4), COMBO_END};
+
+combo_t key_combos[] = {
+    COMBO(caps_combo, KC_CAPSLOCK),
+    COMBO(layer5_left_combo, MO(LAYER_5)),
+    COMBO(layer5_right_combo, MO(LAYER_5)),
+    COMBO(layer6_left_combo, MO(LAYER_6)),
+    COMBO(layer6_right_combo, MO(LAYER_6))
+};
+uint16_t COMBO_LEN = 5;
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Layer 1
-  [0] = LAYOUT_moonlander(
-    DE_CIRC,        KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           KC_TRANSPARENT,                                 TG(5),          KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           DE_MINS,
+  [LAYER_1_WIN] = LAYOUT_moonlander(
+    DE_CIRC,        KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           KC_TRANSPARENT,                                 TG(LAYER_QWERTZ),KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           DE_MINS,
     KC_TRANSPARENT, TD(DANCE_0),    TD(DANCE_1),    KC_L,           TD(DANCE_2),    KC_W,           KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_K,           KC_H,           KC_G,           KC_F,           KC_Q,           DE_SS,
-    MO(1),          KC_U,           KC_I,           KC_A,           KC_E,           KC_O,           KC_TAB,                                                                         KC_MEH,         KC_S,           KC_N,           KC_R,           KC_T,           KC_D,           LT(1,DE_Y),
+    MO(LAYER_3_WIN),KC_U,           KC_I,           KC_A,           KC_E,           KC_O,           KC_TAB,                                                                         KC_MEH,         KC_S,           KC_N,           KC_R,           KC_T,           KC_D,           LT(LAYER_3_WIN,DE_Y),
     KC_LSHIFT,      LCTL_T(DE_UE),  LALT_T(DE_OE),  DE_AE,          KC_P,           DE_Z,                                           KC_B,           KC_M,           KC_COMMA,       RALT_T(KC_DOT), RCTL_T(KC_J),   KC_RSHIFT,
-    KC_TRANSPARENT, KC_LCTRL,       KC_LALT,        OSL(6),         MO(2),          KC_HYPR,                                                                                                        KC_ESCAPE,      DE_GRV,         DE_ACUT,        KC_RALT,        KC_RCTRL,       KC_TRANSPARENT,
-    LSFT_T(KC_SPACE),LT(1,KC_DELETE),KC_LGUI,                        MO(2),          LT(1,KC_ENTER), RSFT_T(KC_BSPACE)
+    KC_TRANSPARENT, KC_LCTRL,       KC_LALT,        OSL(LAYER_MEDIA),MO(LAYER_4),    KC_HYPR,                                                                                                        KC_ESCAPE,      DE_GRV,         DE_ACUT,        KC_RALT,        KC_RCTRL,       KC_TRANSPARENT,
+    LSFT_T(KC_SPACE),LT(LAYER_3_WIN,KC_DELETE),KC_LGUI,                       MO(LAYER_4),    LT(LAYER_3_WIN,KC_ENTER), RSFT_T(KC_BSPACE)
   ),
 // Layer 2 is handled by shift overrides
 // Layer 3
-  [1] = LAYOUT_moonlander(
+  [LAYER_3_WIN] = LAYOUT_moonlander(
     UC(0x21BB),     UC(0x00B9),     UC(0x00B2),     UC(0x00B3),     UC(0x203A),     UC(0x2039),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00A2),     UC(0x00A5),     UC(0x201A),     UC(0x2018),     UC(0x2019),     KC_NO,
     KC_TRANSPARENT, UC(0x2026),     DE_UNDS,        DE_LBRC,        DE_RBRC,        ST_MACRO_0,     KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_EXLM,        DE_LESS,        DE_MORE,        DE_EQL,         DE_AMPR,        UC(0x017F),
     KC_TRANSPARENT, DE_BSLS,        DE_SLSH,        DE_LCBR,        DE_RCBR,        DE_ASTR,        KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_QST,         DE_LPRN,        DE_RPRN,        DE_MINS,        DE_COLN,        DE_AT,
@@ -165,7 +191,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
   ),
 // Layer 4
-  [2] = LAYOUT_moonlander(
+  [LAYER_4] = LAYOUT_moonlander(
     UC(0x0307),     UC(0x00AA),     DE_RING,        UC(0x2116),     KC_NO,          UC(0x00B7),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00A3),     UC(0x00A4),     KC_TAB,         DE_SLSH,        DE_ASTR,        DE_MINS,
     KC_TRANSPARENT, KC_PGUP,        KC_BSPACE,      KC_UP,          KC_DELETE,      KC_PGDOWN,      KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00A1),		KC_KP_7,        KC_KP_8,        KC_KP_9,        DE_PLUS,        UC(0x2212),
     KC_TRANSPARENT, KC_HOME,        KC_LEFT,        KC_DOWN,        KC_RIGHT,       KC_END,         KC_TRANSPARENT,                                                                 KC_TRANSPARENT, UC(0x00BF),		KC_KP_4,        KC_KP_5,        KC_KP_6,        KC_COMMA,       KC_DOT,
@@ -174,7 +200,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
   ),
 // Layer 5
-  [3] = LAYOUT_moonlander(
+  [LAYER_5] = LAYOUT_moonlander(
     UC(0x02DE),     UC(0x2081),     UC(0x2082),     UC(0x2083),     UC(0x2640),     UC(0x2642),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x26A5),     UC(0x03F0),     UC(0x27E8),     UC(0x27E9),     UC(0x2080),     UC(0x2011),
     KC_TRANSPARENT, UC(0x03BE),     KC_NO,          UC(0x03BB),     UC(0x03C7),     UC(0x03C9),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x03BA),     UC(0x03C8),     UC(0x03B3),     UC(0x03C6),     UC(0x03D5),     UC(0x03C2),
     KC_TRANSPARENT, KC_NO,          UC(0x03B9),     UC(0x03B1),     UC(0x03B5),     UC(0x03BF),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x03C3),     UC(0x03BD),     UC(0x03C1),     UC(0x03C4),     UC(0x03B4),     UC(0x03C5),
@@ -183,7 +209,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     UC(0x00A0),     KC_TRANSPARENT, KC_TRANSPARENT,                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
   ),
 // Layer 6
-  [4] = LAYOUT_moonlander(
+  [LAYER_6] = LAYOUT_moonlander(
     UC(0x0323),     UC(0x00AC),     UC(0x2228),     UC(0x2227),     UC(0x22A5),     UC(0x2221),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x2225),     UC(0x2192),     UC(0x221E),     UC(0x221D),     UC(0x2205),     UC(0x2011),
     KC_TRANSPARENT, UC(0x039E),     UC(0x221A),     UC(0x039B),     UC(0x2102),     UC(0x03A9),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00D7),     UC(0x03A8),     UC(0x0393),     UC(0x03A6),     UC(0x211A),     UC(0x2218),
     KC_TRANSPARENT, UC(0x2282),     UC(0x222B),     UC(0x2200),     UC(0x2203),     UC(0x2208),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x03A3),     UC(0x2115),     UC(0x211D),     UC(0x2202),     UC(0x0394),     UC(0x2207),
@@ -192,7 +218,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     UC(0x202F),     KC_TRANSPARENT, KC_TRANSPARENT,                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
   ),
 // QWERTZ/Gaming
-  [5] = LAYOUT_moonlander(
+  [LAYER_QWERTZ] = LAYOUT_moonlander(
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_BSPACE,                                      KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, DE_SS,
     KC_TAB,         KC_Q,           KC_W,           KC_E,           KC_R,           KC_T,           KC_ENTER,                                       KC_TRANSPARENT, DE_Z,           KC_U,           KC_I,           KC_O,           KC_P,           DE_UE,
     KC_CAPSLOCK,    KC_A,           KC_S,           KC_D,           KC_F,           KC_G,           KC_TRANSPARENT,                                                                 KC_TRANSPARENT, KC_H,           KC_J,           KC_K,           KC_L,           DE_OE,          DE_AE,
@@ -201,7 +227,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_SPACE,       KC_DELETE,      KC_TRANSPARENT,                 KC_TRANSPARENT, KC_ENTER,       KC_BSPACE
   ),
 // Function & Media Keys
-  [6] = LAYOUT_moonlander(
+  [LAYER_MEDIA] = LAYOUT_moonlander(
     UC_M_WC       , KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,          KC_F6,                                          KC_TRANSPARENT, KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,         KC_F11,
     UC_M_LN       , KC_AUDIO_VOL_UP,KC_MS_WH_LEFT,  KC_MS_UP,       KC_MS_WH_RIGHT, KC_MEDIA_PREV_TRACK,KC_TRANSPARENT,                                 KC_TRANSPARENT, RGB_MOD,        RGB_SPD,        RGB_SPI,        RGB_VAD,        RGB_VAI,        KC_F12,
     UC_M_MA       , KC_AUDIO_VOL_DOWN,KC_MS_LEFT,     KC_MS_DOWN,     KC_MS_RIGHT,    KC_MEDIA_NEXT_TRACK,KC_TRANSPARENT,                                                                 KC_TRANSPARENT, RGB_SLD,        KC_MS_BTN1,     KC_MS_BTN2,     RGB_HUD,        RGB_HUI,        MU_TOG,

@@ -33,7 +33,7 @@ enum tap_dance_codes {
   _DANCE_MAX,
 };
 
-enum LAYERS {
+enum layers {
     LAYER_1_WIN,
     //LAYER_1_MAC,
     // Layer 2 is handled using overrides
@@ -140,7 +140,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Layer 1
   [LAYER_1_WIN] = LAYOUT_moonlander(
     DE_CIRC,        KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           KC_TRANSPARENT,                                 TG(LAYER_QWERTZ),KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           DE_MINS,
-    KC_TRANSPARENT, TD(DANCE_CUT),    TD(DANCE_PASTE),    KC_L,           TD(DANCE_COPY),    KC_W,           KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_K,           KC_H,           KC_G,           KC_F,           KC_Q,           DE_SS,
+    KC_TRANSPARENT, TD(DANCE_CUT),  TD(DANCE_PASTE),KC_L,           TD(DANCE_COPY), KC_W,           KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_K,           KC_H,           KC_G,           KC_F,           KC_Q,           DE_SS,
     MO(LAYER_3_WIN),KC_U,           KC_I,           KC_A,           KC_E,           KC_O,           KC_TAB,                                                                         KC_MEH,         KC_S,           KC_N,           KC_R,           KC_T,           KC_D,           LT(LAYER_3_WIN,DE_Y),
     KC_LSHIFT,      LCTL_T(DE_UE),  LALT_T(DE_OE),  DE_AE,          KC_P,           DE_Z,                                           KC_B,           KC_M,           KC_COMMA,       RALT_T(KC_DOT), RCTL_T(KC_J),   KC_RSHIFT,
     KC_TRANSPARENT, KC_LCTRL,       KC_LALT,        OSL(LAYER_MEDIA),MO(LAYER_4),    KC_HYPR,                                                                                                        KC_ESCAPE,      DE_GRV,         DE_ACUT,        KC_RALT,        KC_RCTRL,       KC_TRANSPARENT,
@@ -204,13 +204,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 
-
 extern rgb_config_t rgb_matrix_config;
 
 void keyboard_post_init_user(void) {
   rgb_matrix_enable();
 }
-
 
 const uint8_t PROGMEM ledmap[][DRIVER_LED_TOTAL][3] = {
     [LAYER_1_WIN] = { {31,255,255}, {0,183,238}, {0,183,238}, {0,183,238}, {0,0,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,0,255}, {0,0,255}, {31,255,255}, {0,205,155}, {0,205,155}, {0,183,238}, {0,0,255}, {31,255,255}, {31,255,255}, {0,183,238}, {0,183,238}, {0,0,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,183,238}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {31,255,255}, {0,0,255}, {0,183,238}, {0,205,155}, {0,205,155}, {0,183,238}, {31,255,255} },

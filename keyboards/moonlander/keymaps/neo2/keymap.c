@@ -229,7 +229,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 void change_win_mac(bool is_mac) {
-    return;
   #define LAYERS_WIN ((1 << LAYER_1_WIN) | (1 << LAYER_3_WIN))
   #define LAYERS_MAC ((1 << LAYER_1_MAC) | (1 << LAYER_3_MAC))
   _Static_assert(LAYERS_WIN << 1 == LAYERS_MAC, "Mac and Windows layers don't line up");
@@ -244,9 +243,11 @@ void change_win_mac(bool is_mac) {
 
 extern rgb_config_t rgb_matrix_config;
 
+uint32_t setup_os(uint32_t trigger_time, void *arg);
 void keyboard_post_init_user(void) {
   rgb_matrix_enable();
   change_win_mac(get_unicode_input_mode() == UC_MAC);
+  defer_exec(100, setup_os, NULL);
 }
 
 const uint8_t PROGMEM ledmap[][DRIVER_LED_TOTAL][3] = {
@@ -432,8 +433,10 @@ qk_tap_dance_action_t tap_dance_actions[] = {
         [DANCE_COPY] = ACTION_CPC(KC_C),
 };
 
-void process_detected_host_os_user(os_variant_t detected) {
-    switch (detected) {
+uint32_t setup_os(uint32_t trigger_time, void *arg) {
+    switch (detected_host_os()) {
+    case OS_UNSURE:
+        return 500;
     case OS_LINUX:
         set_unicode_input_mode(UC_LNX, false);
         change_win_mac(false);
@@ -450,4 +453,5 @@ void process_detected_host_os_user(os_variant_t detected) {
     default:
         break;
     }
+    return 0;
 }

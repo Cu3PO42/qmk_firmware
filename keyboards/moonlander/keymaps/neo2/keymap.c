@@ -47,11 +47,11 @@ enum layers {
 };
 
 #define ko_make_shifted(trigger_key_, replacement_key_) \
-  ko_make_with_layers(MOD_MASK_SHIFT, trigger_key_, replacement_key_, 1 << (LAYER_1_WIN | LAYER_1_MAC))
+  ko_make_with_layers(MOD_MASK_SHIFT, trigger_key_, replacement_key_, (1 << LAYER_1_WIN) | (1 << LAYER_1_MAC))
 #define ko_make_shifted_keep_shift(trigger_key_, replacement_key_) \
   ((const key_override_t){                                                              \
     .trigger_mods                           = MOD_MASK_SHIFT,                           \
-    .layers                                 = 1 << (LAYER_1_WIN | LAYER_1_MAC),         \
+    .layers                                 = (1 << LAYER_1_WIN) | (1 << LAYER_1_MAC),  \
     .suppressed_mods                        = 0,                                        \
     .options                                = ko_options_default,                       \
     .negative_mod_mask                      = 0,                                        \
@@ -64,7 +64,7 @@ enum layers {
 #define ko_make_shifted_unicode(trigger_key_, codepoint) \
   ((const key_override_t){                                                              \
     .trigger_mods                           = MOD_MASK_SHIFT,                           \
-    .layers                                 = 1 << (LAYER_1_WIN | LAYER_1_MAC),         \
+    .layers                                 = (1 << LAYER_1_WIN) | (1 << LAYER_1_MAC),  \
     .suppressed_mods                        = MOD_MASK_SHIFT,                           \
     .options                                = ko_options_default,                       \
     .negative_mod_mask                      = 0,                                        \
@@ -242,10 +242,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 void change_win_mac(bool is_mac) {
   if (is_mac) {
     default_layer_set(1 << LAYER_1_MAC);
-    layer_state_set((layer_state & ~(LAYER_1_WIN | LAYER_3_WIN)) | ((layer_state & (LAYER_1_WIN | LAYER_3_WIN)) << 1));
+    layer_state_set((layer_state & ~((1 << LAYER_1_WIN) | (1 << LAYER_3_WIN))) | ((layer_state & ((1 << LAYER_1_WIN) | (1 << LAYER_3_WIN))) << 1));
   } else {
     default_layer_set(1 << LAYER_1_WIN);
-    layer_state_set((layer_state & ~(LAYER_1_MAC | LAYER_3_MAC)) | ((layer_state & (LAYER_1_MAC | LAYER_3_MAC)) >> 1));
+    layer_state_set((layer_state & ~((1 << LAYER_1_MAC) | (1 << LAYER_3_MAC))) | ((layer_state & ((1 << LAYER_1_MAC) | (1 << LAYER_3_MAC))) >> 1));
   }
 }
 

@@ -100,6 +100,10 @@ __attribute__((weak)) void unicode_input_start(void) {
 
     switch (unicode_config.input_mode) {
         case UC_MAC:
+            // TODO: generalize this using a config parameter
+            register_code(KC_LEFT_CTRL);
+            tap_code(KC_SPACE);
+            unregister_code(KC_LEFT_CTRL);
             register_code(UNICODE_KEY_MAC);
             break;
         case UC_LNX:
@@ -133,6 +137,11 @@ __attribute__((weak)) void unicode_input_finish(void) {
     switch (unicode_config.input_mode) {
         case UC_MAC:
             unregister_code(UNICODE_KEY_MAC);
+            register_code(KC_LEFT_CTRL);
+            register_code(KC_LEFT_ALT);
+            tap_code(KC_SPACE);
+            unregister_code(KC_LEFT_ALT);
+            unregister_code(KC_LEFT_CTRL);
             break;
         case UC_LNX:
             tap_code(KC_SPACE);

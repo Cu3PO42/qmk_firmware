@@ -1,6 +1,6 @@
 #include QMK_KEYBOARD_H
 #include "version.h"
-#include "keymap_german.h"
+#include "keymap_extras/keymap_german.h"
 #include "os_detection.h"
 #include "process_unicode_common.h"
 
@@ -35,10 +35,10 @@ enum tap_dance_codes {
 
 enum layers {
     LAYER_1_WIN,
-    //LAYER_1_MAC,
+    LAYER_1_MAC,
     // Layer 2 is handled using overrides
     LAYER_3_WIN,
-    //LAYER_3_MAC,
+    LAYER_3_MAC,
     LAYER_4,
     LAYER_5,
     LAYER_6,
@@ -47,11 +47,11 @@ enum layers {
 };
 
 #define ko_make_shifted(trigger_key_, replacement_key_) \
-  ko_make_with_layers(MOD_MASK_SHIFT, trigger_key_, replacement_key_, 1)
+  ko_make_with_layers(MOD_MASK_SHIFT, trigger_key_, replacement_key_, 1 << (LAYER_1_WIN | LAYER_1_MAC))
 #define ko_make_shifted_keep_shift(trigger_key_, replacement_key_) \
   ((const key_override_t){                                                              \
     .trigger_mods                           = MOD_MASK_SHIFT,                           \
-    .layers                                 = 1 << LAYER_1_WIN,                         \
+    .layers                                 = 1 << (LAYER_1_WIN | LAYER_1_MAC),         \
     .suppressed_mods                        = 0,                                        \
     .options                                = ko_options_default,                       \
     .negative_mod_mask                      = 0,                                        \
@@ -64,7 +64,7 @@ enum layers {
 #define ko_make_shifted_unicode(trigger_key_, codepoint) \
   ((const key_override_t){                                                              \
     .trigger_mods                           = MOD_MASK_SHIFT,                           \
-    .layers                                 = 1 << LAYER_1_WIN,                         \
+    .layers                                 = 1 << (LAYER_1_WIN | LAYER_1_MAC),         \
     .suppressed_mods                        = MOD_MASK_SHIFT,                           \
     .options                                = ko_options_default,                       \
     .negative_mod_mask                      = 0,                                        \
@@ -84,6 +84,21 @@ bool send_override_unicode(bool activated, void *context) {
   return true;
 }
 
+#define ko_make_shifted_mod(trigger_key_, replacement_key_) \
+  ((const key_override_t){                                                              \
+    .trigger_mods                           = MOD_MASK_SHIFT,                           \
+    .layers                                 = -1,                                       \
+    .suppressed_mods                        = MOD_MASK_SHIFT,                           \
+    .options                                = ko_option_activation_trigger_down |       \
+                                              ko_option_activation_required_mod_down,   \
+    .negative_mod_mask                      = 0,                                        \
+    .custom_action                          = NULL,                                     \
+    .context                                = NULL,                                     \
+    .trigger                                = (trigger_key_),                           \
+    .replacement                            = (replacement_key_),                       \
+    .enabled                                = NULL                                      \
+  })
+
 const key_override_t circ_override = ko_make_shifted_unicode(DE_CIRC, 0x030C); // ˇ
 const key_override_t s1_override = ko_make_shifted_keep_shift(KC_1, DE_CIRC); // °
 const key_override_t s2_override = ko_make_shifted_keep_shift(KC_2, KC_3); // §
@@ -91,6 +106,7 @@ const key_override_t s3_override = ko_make_shifted_unicode(KC_3, 0x2113); // ℓ
 const key_override_t s4_override = ko_make_shifted_unicode(KC_4, 0x00BB); // »
 const key_override_t s5_override = ko_make_shifted_unicode(KC_5, 0x00AB); // «
 const key_override_t s6_override = ko_make_shifted_keep_shift(KC_6, KC_4); // $
+// TODO: on mac it's just alt, not algr, this might not work
 const key_override_t s7_override = ko_make_shifted(KC_7, ALGR(KC_E)); // €
 const key_override_t s8_override = ko_make_shifted_unicode(KC_8, 0x201E); // „
 const key_override_t s9_override = ko_make_shifted_unicode(KC_9, 0x201C); // „
@@ -100,6 +116,13 @@ const key_override_t sGrave_override = ko_make_shifted_unicode(DE_GRV, 0x0327); 
 const key_override_t sAcute_override = ko_make_shifted_unicode(DE_ACUT, 0x0303); // ~
 const key_override_t sComma_override = ko_make_shifted_unicode(KC_COMMA, 0x2013); // –
 const key_override_t sDot_override = ko_make_shifted_unicode(RALT_T(KC_DOT), 0x2022); // •
+
+const key_override_t sLayer5OverrideLeftWin = ko_make_shifted_mod(MO(LAYER_3_WIN), MO(LAYER_5));
+const key_override_t sLayer5OverrideLeftMac = ko_make_shifted_mod(MO(LAYER_3_MAC), MO(LAYER_5));
+const key_override_t sLayer5OverrideRightWin = ko_make_shifted_mod(LT(LAYER_3_WIN, DE_Y), MO(LAYER_5));
+const key_override_t sLayer5OverrideRightMac = ko_make_shifted_mod(LT(LAYER_3_MAC, DE_Y), MO(LAYER_5));
+// TODO: technically this is the incorrect way to access layer 6
+const key_override_t sLayer6Override = ko_make_shifted_mod(MO(LAYER_4), MO(LAYER_6));
 
 const key_override_t **key_overrides = (const key_override_t *[]){
   &circ_override,
@@ -118,23 +141,20 @@ const key_override_t **key_overrides = (const key_override_t *[]){
   &sAcute_override,
   &sComma_override,
   &sDot_override,
+  &sLayer5OverrideLeftWin,
+  &sLayer5OverrideLeftMac,
+  &sLayer5OverrideRightWin,
+  &sLayer5OverrideRightMac,
+  &sLayer6Override,
   NULL // Must terminate this arra with NULL
 };
 
 const uint16_t PROGMEM caps_combo[] = {KC_LSHIFT, KC_RSHIFT, COMBO_END};
-const uint16_t PROGMEM layer5_left_combo[] = {MO(LAYER_3_WIN), KC_LSHIFT, COMBO_END};
-const uint16_t PROGMEM layer5_right_combo[] = {LT(LAYER_3_WIN, DE_Y), KC_RSHIFT, COMBO_END};
-const uint16_t PROGMEM layer6_left_combo[] = {MO(LAYER_3_WIN), MO(LAYER_4), COMBO_END};
-const uint16_t PROGMEM layer6_right_combo[] = {LT(LAYER_3_WIN, DE_Y), MO(LAYER_4), COMBO_END};
 
 combo_t key_combos[] = {
     COMBO(caps_combo, KC_CAPSLOCK),
-    COMBO(layer5_left_combo, MO(LAYER_5)),
-    COMBO(layer5_right_combo, MO(LAYER_5)),
-    COMBO(layer6_left_combo, MO(LAYER_6)),
-    COMBO(layer6_right_combo, MO(LAYER_6))
 };
-uint16_t COMBO_LEN = 5;
+uint16_t COMBO_LEN = 1;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Layer 1
@@ -142,20 +162,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     DE_CIRC,        KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           KC_TRANSPARENT,                                 TG(LAYER_QWERTZ),KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           DE_MINS,
     KC_TRANSPARENT, TD(DANCE_CUT),  TD(DANCE_PASTE),KC_L,           TD(DANCE_COPY), KC_W,           KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_K,           KC_H,           KC_G,           KC_F,           KC_Q,           DE_SS,
     MO(LAYER_3_WIN),KC_U,           KC_I,           KC_A,           KC_E,           KC_O,           KC_TAB,                                                                         KC_MEH,         KC_S,           KC_N,           KC_R,           KC_T,           KC_D,           LT(LAYER_3_WIN,DE_Y),
-    KC_LSHIFT,      LCTL_T(DE_UE),  LALT_T(DE_OE),  DE_AE,          KC_P,           DE_Z,                                           KC_B,           KC_M,           KC_COMMA,       RALT_T(KC_DOT), RCTL_T(KC_J),   KC_RSHIFT,
+    KC_LSHIFT,      LCTL_T(DE_UDIA),LALT_T(DE_ODIA),DE_ADIA,          KC_P,           DE_Z,                                           KC_B,           KC_M,           KC_COMMA,       RALT_T(KC_DOT), RCTL_T(KC_J),   KC_RSHIFT,
     KC_TRANSPARENT, KC_LCTRL,       KC_LALT,        OSL(LAYER_MEDIA),MO(LAYER_4),    KC_HYPR,                                                                                                        KC_ESCAPE,      DE_GRV,         DE_ACUT,        KC_RALT,        KC_RCTRL,       KC_TRANSPARENT,
     LSFT_T(KC_SPACE),LT(LAYER_3_WIN,KC_DELETE),KC_LGUI,                       MO(LAYER_4),    LT(LAYER_3_WIN,KC_ENTER), RSFT_T(KC_BSPACE)
   ),
 // Layer 2 is handled by shift overrides
 // Layer 3
-  [LAYER_3_WIN] = LAYOUT_moonlander(
-    UC(0x21BB),     UC(0x00B9),     UC(0x00B2),     UC(0x00B3),     UC(0x203A),     UC(0x2039),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00A2),     UC(0x00A5),     UC(0x201A),     UC(0x2018),     UC(0x2019),     KC_NO,
-    KC_TRANSPARENT, UC(0x2026),     DE_UNDS,        DE_LBRC,        DE_RBRC,        ST_CARRET,     KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_EXLM,        DE_LESS,        DE_MORE,        DE_EQL,         DE_AMPR,        UC(0x017F),
-    KC_TRANSPARENT, DE_BSLS,        DE_SLSH,        DE_LCBR,        DE_RCBR,        DE_ASTR,        KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_QST,         DE_LPRN,        DE_RPRN,        DE_MINS,        DE_COLN,        DE_AT,
-    KC_TRANSPARENT, DE_HASH,        DE_DLR,         DE_PIPE,        DE_TILD,        ST_BTCK,                                     DE_PLUS,        DE_PERC,        DE_DQOT,        DE_QUOT,        DE_SCLN,        KC_TRANSPARENT,
-    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                                                                                 KC_TRANSPARENT, UC(0x030A),     UC(0x0337), KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
-    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
-  ),
+#define LAYER_3_LAYOUT LAYOUT_moonlander( \
+    UC(0x21BB),     UC(0x00B9),     UC(0x00B2),     UC(0x00B3),     UC(0x203A),     UC(0x2039),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00A2),     UC(0x00A5),     UC(0x201A),     UC(0x2018),     UC(0x2019),     KC_NO, \
+    KC_TRANSPARENT, UC(0x2026),     DE_UNDS,        DE_LBRC,        DE_RBRC,        ST_CARRET,     KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_EXLM,        DE_LABK,        DE_RABK,        DE_EQL,         DE_AMPR,        UC(0x017F), \
+    KC_TRANSPARENT, DE_BSLS,        DE_SLSH,        DE_LCBR,        DE_RCBR,        DE_ASTR,        KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_QUES,         DE_LPRN,        DE_RPRN,        DE_MINS,        DE_COLN,        DE_AT, \
+    KC_TRANSPARENT, DE_HASH,        DE_DLR,         DE_PIPE,        DE_TILD,        ST_BTCK,                                     DE_PLUS,        DE_PERC,        DE_DQUO,        DE_QUOT,        DE_SCLN,        KC_TRANSPARENT, \
+    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                                                                                 KC_TRANSPARENT, UC(0x030A),     UC(0x0337), KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, \
+    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT \
+  )
+  [LAYER_3_WIN] = LAYER_3_LAYOUT,
 // Layer 4
   [LAYER_4] = LAYOUT_moonlander(
     UC(0x0307),     UC(0x00AA),     DE_RING,        UC(0x2116),     KC_NO,          UC(0x00B7),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00A3),     UC(0x00A4),     KC_TAB,         DE_SLSH,        DE_ASTR,        DE_MINS,
@@ -201,13 +222,38 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                                                                                 KC_TRANSPARENT, HSV_86_255_128, HSV_172_255_255,AU_ON,          AU_OFF,         RESET,
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
   ),
+#include "keymap_extras/keymap_german_undef.h"
+#include "keymap_extras/keymap_german_mac_iso.h"
+  // TODO: move cmd/ctrl
+  [LAYER_1_MAC] = LAYOUT_moonlander(
+    DE_CIRC,        KC_1,           KC_2,           KC_3,           KC_4,           KC_5,           KC_TRANSPARENT,                                 TG(LAYER_QWERTZ),KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           DE_MINS,
+    KC_TRANSPARENT, TD(DANCE_CUT),  TD(DANCE_PASTE),KC_L,           TD(DANCE_COPY), KC_W,           KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_K,           KC_H,           KC_G,           KC_F,           KC_Q,           DE_SS,
+    MO(LAYER_3_MAC),KC_U,           KC_I,           KC_A,           KC_E,           KC_O,           KC_TAB,                                                                         KC_MEH,         KC_S,           KC_N,           KC_R,           KC_T,           KC_D,           LT(LAYER_3_MAC,DE_Y),
+    KC_LSHIFT,      LCTL_T(DE_UDIA),LALT_T(DE_ODIA),DE_ADIA,        KC_P,           DE_Z,                                           KC_B,           KC_M,           KC_COMMA,       RALT_T(KC_DOT), RCTL_T(KC_J),   KC_RSHIFT,
+    KC_TRANSPARENT, KC_LCTRL,       KC_LALT,        OSL(LAYER_MEDIA),MO(LAYER_4),    KC_HYPR,                                                                                                        KC_ESCAPE,      DE_GRV,         DE_ACUT,        KC_RALT,        KC_RCTRL,       KC_TRANSPARENT,
+    LSFT_T(KC_SPACE),LT(LAYER_3_MAC,KC_DELETE),KC_LGUI,                       MO(LAYER_4),    LT(LAYER_3_MAC,KC_ENTER), RSFT_T(KC_BSPACE)
+  ),
+  // TODO: verify that all keys work
+  [LAYER_3_MAC] = LAYER_3_LAYOUT,
+#include "keymap_extras/keymap_german_mac_iso_undef.h"
+#include "keymap_extras/keymap_german.h"
 };
 
+void change_win_mac(bool is_mac) {
+  if (is_mac) {
+    default_layer_set(1 << LAYER_1_MAC);
+    layer_state_set((layer_state & ~(LAYER_1_WIN | LAYER_3_WIN)) | ((layer_state & (LAYER_1_WIN | LAYER_3_WIN)) << 1));
+  } else {
+    default_layer_set(1 << LAYER_1_WIN);
+    layer_state_set((layer_state & ~(LAYER_1_MAC | LAYER_3_MAC)) | ((layer_state & (LAYER_1_MAC | LAYER_3_MAC)) >> 1));
+  }
+}
 
 extern rgb_config_t rgb_matrix_config;
 
 void keyboard_post_init_user(void) {
   rgb_matrix_enable();
+  change_win_mac(get_unicode_input_mode() == UC_MAC);
 }
 
 const uint8_t PROGMEM ledmap[][DRIVER_LED_TOTAL][3] = {
@@ -246,20 +292,22 @@ void rgb_matrix_indicators_user(void) {
   }
   if (keyboard_config.disable_layer_led) { return; }
   switch (biton32(layer_state)) {
-    case 0:
-      set_layer_color(0);
+    case LAYER_1_WIN:
+    case LAYER_1_MAC:
+      set_layer_color(LAYER_1_WIN);
       break;
-    case 1:
-      set_layer_color(1);
+    case LAYER_3_WIN:
+    case LAYER_3_MAC:
+      set_layer_color(LAYER_3_WIN);
       break;
-    case 2:
-      set_layer_color(2);
+    case LAYER_4:
+      set_layer_color(LAYER_4);
       break;
-    case 5:
-      set_layer_color(5);
+    case LAYER_QWERTZ:
+      set_layer_color(LAYER_QWERTZ);
       break;
-    case 6:
-      set_layer_color(6);
+    case LAYER_MEDIA:
+      set_layer_color(LAYER_MEDIA);
       break;
    default:
     if (rgb_matrix_get_flags() == LED_FLAG_NONE)
@@ -317,6 +365,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             rgblight_sethsv(172,255,255);
         }
         return false;
+      case UC_M_WC:
+      case UC_M_LN:
+        change_win_mac(false);
+        break;
+      case UC_M_MA:
+        change_win_mac(true);
+        break;
     }
   return true;
 }
@@ -358,7 +413,7 @@ void dance_finished(qk_tap_dance_state_t *state, void *user_data) {
     uint16_t kc = (uint16_t)(uintptr_t)user_data;
     switch (dance_step(state)) {
         case SINGLE_TAP: register_code16(kc); break;
-        case SINGLE_HOLD: register_code16(LCTL(kc)); break;
+        case SINGLE_HOLD: register_code16(get_unicode_input_mode() == UC_MAC ? LGUI(kc) : LCTL(kc)); break;
         case DOUBLE_TAP: register_code16(kc); register_code16(kc); break;
         case DOUBLE_SINGLE_TAP: tap_code16(kc); register_code16(kc);
     }
@@ -369,7 +424,7 @@ void dance_reset(qk_tap_dance_state_t *state, void *user_data) {
     uint16_t kc = (uint16_t)(uintptr_t)user_data;
     switch (dance_step(state)) {
         case SINGLE_TAP: unregister_code16(kc); break;
-        case SINGLE_HOLD: unregister_code16(LCTL(kc)); break;
+        case SINGLE_HOLD: unregister_code16(get_unicode_input_mode() == UC_MAC ? LGUI(kc) : LCTL(kc)); break;
         case DOUBLE_TAP: unregister_code16(kc); break;
         case DOUBLE_SINGLE_TAP: unregister_code16(kc); break;
     }
@@ -388,13 +443,16 @@ void process_detected_host_os_user(os_variant_t detected) {
     switch (detected) {
     case OS_LINUX:
         set_unicode_input_mode(UC_LNX, false);
+        change_win_mac(false);
         break;
     case OS_WINDOWS:
         set_unicode_input_mode(UC_WINC, false);
+        change_win_mac(false);
         break;
     case OS_MACOS:
     case OS_IOS:
         set_unicode_input_mode(UC_MAC, false);
+        change_win_mac(true);
         break;
     default:
         break;

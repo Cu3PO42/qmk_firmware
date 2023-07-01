@@ -84,31 +84,6 @@ bool send_override_unicode(bool activated, void *context) {
   return true;
 }
 
-#define ko_make_shifted_mod(trigger_key_, layer_) \
-  ((const key_override_t){                                                              \
-    .trigger_mods                           = MOD_MASK_SHIFT,                           \
-    .layers                                 = -1,                                       \
-    .suppressed_mods                        = MOD_MASK_SHIFT,                           \
-    .options                                = ko_option_activation_trigger_down |       \
-                                              ko_option_activation_required_mod_down,   \
-    .negative_mod_mask                      = 0,                                        \
-    .custom_action                          = activate_layer_override,                  \
-    .context                                = (void *)(uintptr_t)(layer_),              \
-    .trigger                                = (trigger_key_),                           \
-    .replacement                            = KC_NO,                                    \
-    .enabled                                = NULL                                      \
-  })
-
-bool activate_layer_override(bool activated, void *context) {
-  uint8_t layer = (uint8_t)(uintptr_t)context;
-  if (activated) {
-    layer_on(layer);
-  } else {
-    layer_off(layer);
-  }
-  return true;
-}
-
 const key_override_t circ_override = ko_make_shifted_unicode(DE_CIRC, 0x030C); // ˇ
 const key_override_t s1_override = ko_make_shifted_keep_shift(KC_1, DE_CIRC); // °
 const key_override_t s2_override = ko_make_shifted_keep_shift(KC_2, KC_3); // §
@@ -127,14 +102,6 @@ const key_override_t sAcute_override = ko_make_shifted_unicode(DE_ACUT, 0x0303);
 const key_override_t sComma_override = ko_make_shifted_unicode(KC_COMMA, 0x2013); // –
 const key_override_t sDot_override = ko_make_shifted_unicode(RALT_T(KC_DOT), 0x2022); // •
 
-const key_override_t sLayer5OverrideLeftWin = ko_make_shifted_mod(MO(LAYER_3_WIN), LAYER_5);
-const key_override_t sLayer5OverrideLeftMac = ko_make_shifted_mod(MO(LAYER_3_MAC), LAYER_5);
-// FIXME: we don't have a way to do this on the right, because outherwise we can't type a capital y
-//const key_override_t sLayer5OverrideRightWin = ko_make_shifted_mod(LT(LAYER_3_WIN, DE_Y), LAYER_5);
-//const key_override_t sLayer5OverrideRightMac = ko_make_shifted_mod(LT(LAYER_3_MAC, DE_Y), LAYER_5);
-// TODO: technically this is the incorrect way to access layer 6
-const key_override_t sLayer6Override = ko_make_shifted_mod(MO(LAYER_4), LAYER_6);
-
 const key_override_t **key_overrides = (const key_override_t *[]){
   &circ_override,
   &s1_override,
@@ -152,20 +119,31 @@ const key_override_t **key_overrides = (const key_override_t *[]){
   &sAcute_override,
   &sComma_override,
   &sDot_override,
-  &sLayer5OverrideLeftWin,
-  &sLayer5OverrideLeftMac,
-  //&sLayer5OverrideRightWin,
-  //&sLayer5OverrideRightMac,
-  &sLayer6Override,
   NULL // Must terminate this arra with NULL
 };
 
 const uint16_t PROGMEM caps_combo[] = {KC_LSHIFT, KC_RSHIFT, COMBO_END};
+const uint16_t PROGMEM layer5_left_combo_win[] = {MO(LAYER_3_WIN), KC_LSHIFT, COMBO_END};
+const uint16_t PROGMEM layer5_right_combo_win[] = {LT(LAYER_3_WIN, DE_Y), KC_RSHIFT, COMBO_END};
+const uint16_t PROGMEM layer6_left_combo_win[] = {MO(LAYER_3_WIN), MO(LAYER_4), COMBO_END};
+const uint16_t PROGMEM layer6_right_combo_win[] = {LT(LAYER_3_WIN, DE_Y), MO(LAYER_4), COMBO_END};
+const uint16_t PROGMEM layer5_left_combo_mac[] = {MO(LAYER_3_MAC), KC_LSHIFT, COMBO_END};
+const uint16_t PROGMEM layer5_right_combo_mac[] = {LT(LAYER_3_MAC, DE_Y), KC_RSHIFT, COMBO_END};
+const uint16_t PROGMEM layer6_left_combo_mac[] = {MO(LAYER_3_MAC), MO(LAYER_4), COMBO_END};
+const uint16_t PROGMEM layer6_right_combo_mac[] = {LT(LAYER_3_MAC, DE_Y), MO(LAYER_4), COMBO_END};
 
 combo_t key_combos[] = {
     COMBO(caps_combo, KC_CAPSLOCK),
+    COMBO(layer5_left_combo_win, MO(LAYER_5)),
+    COMBO(layer5_right_combo_win, MO(LAYER_5)),
+    COMBO(layer6_left_combo_win, MO(LAYER_6)),
+    COMBO(layer6_right_combo_win, MO(LAYER_6)),
+    COMBO(layer5_left_combo_mac, MO(LAYER_5)),
+    COMBO(layer5_right_combo_mac, MO(LAYER_5)),
+    COMBO(layer6_left_combo_mac, MO(LAYER_6)),
+    COMBO(layer6_right_combo_mac, MO(LAYER_6))
 };
-uint16_t COMBO_LEN = 1;
+uint16_t COMBO_LEN = 5;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Layer 1

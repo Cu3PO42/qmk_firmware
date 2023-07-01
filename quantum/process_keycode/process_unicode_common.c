@@ -29,6 +29,10 @@ static int8_t  selected_count = sizeof selected / sizeof *selected;
 static int8_t  selected_index;
 #endif
 
+#if defined(UNICODE_MAC_PREFIX) != defined(UNICODE_MAC_SUFFIX)
+#warning When using UNICODE_MAC_PREFIX or UNICODE_MAC_SUFFIX, you must always define both.
+#endif
+
 void unicode_input_mode_init(void) {
     unicode_config.raw = eeprom_read_byte(EECONFIG_UNICODEMODE);
 #if UNICODE_SELECTED_MODES != -1
@@ -100,10 +104,9 @@ __attribute__((weak)) void unicode_input_start(void) {
 
     switch (unicode_config.input_mode) {
         case UC_MAC:
-            // TODO: generalize this using a config parameter
-            register_code(KC_LEFT_CTRL);
-            tap_code(KC_SPACE);
-            unregister_code(KC_LEFT_CTRL);
+            #ifdef UNICODE_MAC_PREFIX
+            SEND_STRING(UNICODE_MAC_PREFIX);
+            #endif
             register_code(UNICODE_KEY_MAC);
             break;
         case UC_LNX:
@@ -137,11 +140,9 @@ __attribute__((weak)) void unicode_input_finish(void) {
     switch (unicode_config.input_mode) {
         case UC_MAC:
             unregister_code(UNICODE_KEY_MAC);
-            register_code(KC_LEFT_CTRL);
-            register_code(KC_LEFT_ALT);
-            tap_code(KC_SPACE);
-            unregister_code(KC_LEFT_ALT);
-            unregister_code(KC_LEFT_CTRL);
+            #ifdef UNICODE_MAC_SUFFIX
+            SEND_STRING(UNICODE_MAC_SUFFIX);
+            #endif
             break;
         case UC_LNX:
             tap_code(KC_SPACE);
@@ -170,6 +171,9 @@ __attribute__((weak)) void unicode_input_cancel(void) {
     switch (unicode_config.input_mode) {
         case UC_MAC:
             unregister_code(UNICODE_KEY_MAC);
+            #ifdef UNICODE_MAC_SUFFIX
+            SEND_STRING(UNICODE_MAC_SUFFIX);
+            #endif
             break;
         case UC_LNX:
             tap_code(KC_ESCAPE);

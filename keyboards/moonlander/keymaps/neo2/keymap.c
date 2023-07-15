@@ -15,6 +15,8 @@
 #define LSA_T(kc) MT(MOD_LSFT | MOD_LALT, kc)
 #define MOON_LED_LEVEL LED_LEVEL
 
+#define IS_MAC (get_unicode_input_mode() == UC_MAC)
+
 enum custom_keycodes {
   RGB_SLD = ML_SAFE_RANGE,
   HSV_0_255_255,
@@ -24,6 +26,7 @@ enum custom_keycodes {
   ST_BTCK,
   DE_LSPO,
   DE_RSPC,
+  DE_TILD_UDEAD,
 };
 
 enum tap_dance_codes {
@@ -47,14 +50,14 @@ enum layers {
 };
 
 #define ko_make_shifted(trigger_key_, replacement_key_) \
-  ko_make_with_layers(MOD_MASK_SHIFT, trigger_key_, replacement_key_, (1 << LAYER_1_WIN) | (1 << LAYER_1_MAC))
+  ko_make_with_layers_and_negmods(MOD_MASK_SHIFT, trigger_key_, replacement_key_, (1 << LAYER_1_WIN) | (1 << LAYER_1_MAC), MOD_MASK_CAG)
 #define ko_make_shifted_keep_shift(trigger_key_, replacement_key_) \
   ((const key_override_t){                                                              \
     .trigger_mods                           = MOD_MASK_SHIFT,                           \
     .layers                                 = (1 << LAYER_1_WIN) | (1 << LAYER_1_MAC),  \
     .suppressed_mods                        = 0,                                        \
     .options                                = ko_options_default,                       \
-    .negative_mod_mask                      = 0,                                        \
+    .negative_mod_mask                      = MOD_MASK_CAG,                             \
     .custom_action                          = NULL,                                     \
     .context                                = NULL,                                     \
     .trigger                                = (trigger_key_),                           \
@@ -67,7 +70,7 @@ enum layers {
     .layers                                 = (1 << LAYER_1_WIN) | (1 << LAYER_1_MAC),  \
     .suppressed_mods                        = MOD_MASK_SHIFT,                           \
     .options                                = ko_options_default,                       \
-    .negative_mod_mask                      = 0,                                        \
+    .negative_mod_mask                      = MOD_MASK_CAG,                             \
     .custom_action                          = &send_override_unicode,                   \
     .context                                = (void*)(codepoint),                       \
     .trigger                                = (trigger_key_),                           \
@@ -84,6 +87,8 @@ bool send_override_unicode(bool activated, void *context) {
   return true;
 }
 
+// TODO: € broken on Mac. It appears that Shift is still recognized by the OS even though it is suppressed
+
 const key_override_t circ_override = ko_make_shifted_unicode(DE_CIRC, 0x030C); // ˇ
 const key_override_t s1_override = ko_make_shifted_keep_shift(KC_1, DE_CIRC); // °
 const key_override_t s2_override = ko_make_shifted_keep_shift(KC_2, KC_3); // §
@@ -91,7 +96,7 @@ const key_override_t s3_override = ko_make_shifted_unicode(KC_3, 0x2113); // ℓ
 const key_override_t s4_override = ko_make_shifted_unicode(KC_4, 0x00BB); // »
 const key_override_t s5_override = ko_make_shifted_unicode(KC_5, 0x00AB); // «
 const key_override_t s6_override = ko_make_shifted_keep_shift(KC_6, KC_4); // $
-// TODO: on mac it's just alt, not algr, this might not work
+// Note that ALGR is actually RALT, on Mac we also want just RALT, so this is fine.
 const key_override_t s7_override = ko_make_shifted(KC_7, ALGR(KC_E)); // €
 const key_override_t s8_override = ko_make_shifted_unicode(KC_8, 0x201E); // „
 const key_override_t s9_override = ko_make_shifted_unicode(KC_9, 0x201C); // „
@@ -161,7 +166,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     UC(0x21BB),     UC(0x00B9),     UC(0x00B2),     UC(0x00B3),     UC(0x203A),     UC(0x2039),     KC_TRANSPARENT,                                 KC_TRANSPARENT, UC(0x00A2),     UC(0x00A5),     UC(0x201A),     UC(0x2018),     UC(0x2019),     KC_NO, \
     KC_TRANSPARENT, UC(0x2026),     DE_UNDS,        DE_LBRC,        DE_RBRC,        ST_CARRET,     KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_EXLM,        DE_LABK,        DE_RABK,        DE_EQL,         DE_AMPR,        UC(0x017F), \
     KC_TRANSPARENT, DE_BSLS,        DE_SLSH,        DE_LCBR,        DE_RCBR,        DE_ASTR,        KC_TRANSPARENT,                                 KC_TRANSPARENT, DE_QUES,         DE_LPRN,        DE_RPRN,        DE_MINS,        DE_COLN,        DE_AT, \
-    KC_TRANSPARENT, DE_HASH,        DE_DLR,         DE_PIPE,        DE_TILD,        ST_BTCK,                                     DE_PLUS,        DE_PERC,        DE_DQUO,        DE_QUOT,        DE_SCLN,        KC_TRANSPARENT, \
+    KC_TRANSPARENT, DE_HASH,        DE_DLR,         DE_PIPE,        DE_TILD_UDEAD,  ST_BTCK,                                     DE_PLUS,        DE_PERC,        DE_DQUO,        DE_QUOT,        DE_SCLN,        KC_TRANSPARENT, \
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                                                                                                 KC_TRANSPARENT, UC(0x030A),     UC(0x0337), KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, \
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,                 KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT \
   )
@@ -317,12 +322,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       SEND_STRING(SS_TAP(X_GRAVE) SS_DELAY(10) SS_TAP(X_SPACE));
 
     }
-    break;
+    return false;
     case ST_BTCK:
     if (record->event.pressed) {
       SEND_STRING(SS_LSFT(SS_TAP(X_EQUAL)) SS_DELAY(10) SS_TAP(X_SPACE));
     }
-    break;
+    return false;
+    case DE_TILD_UDEAD:
+    if (IS_MAC) {
+        if (record->event.pressed) {
+            SEND_STRING(SS_RALT(SS_TAP(X_N)) SS_DELAY(10) SS_TAP(X_SPACE));
+        }
+    } else {
+        if (record->event.pressed) {
+            register_code(KC_RALT);
+            register_code(KC_RBRC);
+        } else {
+            unregister_code(KC_RBRC);
+            unregister_code(KC_RALT);
+        }
+    }
+    return false;
 
     case RGB_SLD:
         if (rawhid_state.rgb_control) {

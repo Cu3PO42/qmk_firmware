@@ -19,6 +19,10 @@
 
 #include "keymap.h"
 
+#pragma push_macro("A")
+#undef A
+#define A(kc) RALT(kc)
+
 // clang-format off
 
 /*
@@ -243,4 +247,5 @@
 #define DE_DIV  S(A(DE_DOT))  // ÷
 #define DE_MDSH S(A(DE_MINS)) // —
                               //
+#pragma pop_macro("A")
 #endif

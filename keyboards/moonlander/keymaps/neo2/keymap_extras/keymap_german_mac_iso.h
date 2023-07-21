@@ -19,10 +19,6 @@
 
 #include "keymap.h"
 
-#pragma push_macro("A")
-#undef A
-#define A(kc) RALT(kc)
-
 // clang-format off
 
 /*
@@ -39,7 +35,8 @@
  * └─────┴────┴─────┴───────────────────────┴─────┴────┴─────┘
  */
 // Row 1
-#define DE_CIRC KC_GRV  // ^ (dead)
+// NOTE: I switched ^ and < bec
+#define DE_CIRC KC_NUBS // ^ (dead)
 #define DE_1    KC_1    // 1
 #define DE_2    KC_2    // 2
 #define DE_3    KC_3    // 3
@@ -79,7 +76,7 @@
 #define DE_ADIA KC_QUOT // Ä
 #define DE_HASH KC_NUHS // #
 // Row 4
-#define DE_LABK KC_NUBS // <
+#define DE_LABK KC_GRV // <
 #define DE_Y    KC_Z    // Y
 #define DE_X    KC_X    // X
 #define DE_C    KC_C    // C
@@ -142,56 +139,56 @@
  * └─────┴────┴─────┴───────────────────────┴─────┴────┴─────┘
  */
 // Row 1
-#define DE_DLQU A(DE_CIRC) // „
-#define DE_IEXL A(DE_1)    // ¡
-#define DE_LDQU A(DE_2)    // “
-#define DE_PILC A(DE_3)    // ¶
-#define DE_CENT A(DE_4)    // ¢
-#define DE_LBRC A(DE_5)    // [
-#define DE_RBRC A(DE_6)    // ]
-#define DE_PIPE A(DE_7)    // |
-#define DE_LCBR A(DE_8)    // {
-#define DE_RCBR A(DE_9)    // }
-#define DE_NEQL A(DE_0)    // ≠
-#define DE_IQUE A(DE_SS)   // ¿
+#define DE_DLQU RALT(DE_CIRC) // „
+#define DE_IEXL RALT(DE_1)    // ¡
+#define DE_LDQU RALT(DE_2)    // “
+#define DE_PILC RALT(DE_3)    // ¶
+#define DE_CENT RALT(DE_4)    // ¢
+#define DE_LBRC RALT(DE_5)    // [
+#define DE_RBRC RALT(DE_6)    // ]
+#define DE_PIPE RALT(DE_7)    // |
+#define DE_LCBR RALT(DE_8)    // {
+#define DE_RCBR RALT(DE_9)    // }
+#define DE_NEQL RALT(DE_0)    // ≠
+#define DE_IQUE RALT(DE_SS)   // ¿
 // Row 2
-#define DE_LDAQ A(DE_Q)    // «
-#define DE_NARS A(DE_W)    // ∑
-#define DE_EURO A(DE_E)    // €
-#define DE_REGD A(DE_R)    // ®
-#define DE_DAGG A(DE_T)    // †
-#define DE_OMEG A(DE_Z)    // Ω
-#define DE_DIAE A(DE_U)    // ¨ (dead)
-#define DE_FRSL A(DE_I)    // ⁄
-#define DE_OSTR A(DE_O)    // Ø
-#define DE_PI   A(DE_P)    // π
-#define DE_BULT A(DE_UDIA) // •
-#define DE_PLMN A(DE_PLUS) // ±
+#define DE_LDAQ RALT(DE_Q)    // «
+#define DE_NARS RALT(DE_W)    // ∑
+#define DE_EURO RALT(DE_E)    // €
+#define DE_REGD RALT(DE_R)    // ®
+#define DE_DAGG RALT(DE_T)    // †
+#define DE_OMEG RALT(DE_Z)    // Ω
+#define DE_DIAE RALT(DE_U)    // ¨ (dead)
+#define DE_FRSL RALT(DE_I)    // ⁄
+#define DE_OSTR RALT(DE_O)    // Ø
+#define DE_PI   RALT(DE_P)    // π
+#define DE_BULT RALT(DE_UDIA) // •
+#define DE_PLMN RALT(DE_PLUS) // ±
 // Row 3
-#define DE_ARNG A(DE_A)    // Å
-#define DE_SLQU A(DE_S)    // ‚
-#define DE_PDIF A(DE_D)    // ∂
-#define DE_FHK  A(DE_F)    // ƒ
-#define DE_COPY A(DE_G)    // ©
-#define DE_FORD A(DE_H)    // ª
-#define DE_MORD A(DE_J)    // º
-#define DE_INCR A(DE_K)    // ∆
-#define DE_AT   A(DE_L)    // @
-#define DE_OE   A(DE_ODIA) // Œ
-#define DE_AE   A(DE_ADIA) // Æ
-#define DE_LSQU A(DE_HASH) // ‘
+#define DE_ARNG RALT(DE_A)    // Å
+#define DE_SLQU RALT(DE_S)    // ‚
+#define DE_PDIF RALT(DE_D)    // ∂
+#define DE_FHK  RALT(DE_F)    // ƒ
+#define DE_COPY RALT(DE_G)    // ©
+#define DE_FORD RALT(DE_H)    // ª
+#define DE_MORD RALT(DE_J)    // º
+#define DE_INCR RALT(DE_K)    // ∆
+#define DE_AT   RALT(DE_L)    // @
+#define DE_OE   RALT(DE_ODIA) // Œ
+#define DE_AE   RALT(DE_ADIA) // Æ
+#define DE_LSQU RALT(DE_HASH) // ‘
 // Row 4
-#define DE_LTEQ A(DE_LABK) // ≤
-#define DE_YEN  A(DE_Y)    // ¥
-#define DE_AEQL A(DE_X)    // ≈
-#define DE_CCCE A(DE_C)    // Ç
-#define DE_SQRT A(DE_V)    // √
-#define DE_INTG A(DE_B)    // ∫
-#define DE_TILD A(DE_N)    // ~ (dead)
-#define DE_MICR A(DE_M)    // µ
-#define DE_INFN A(DE_COMM) // ∞
-#define DE_ELLP A(DE_DOT)  // …
-#define DE_NDSH A(DE_MINS) // –
+#define DE_LTEQ RALT(DE_LABK) // ≤
+#define DE_YEN  RALT(DE_Y)    // ¥
+#define DE_AEQL RALT(DE_X)    // ≈
+#define DE_CCCE RALT(DE_C)    // Ç
+#define DE_SQRT RALT(DE_V)    // √
+#define DE_INTG RALT(DE_B)    // ∫
+#define DE_TILD RALT(DE_N)    // ~ (dead)
+#define DE_MICR RALT(DE_M)    // µ
+#define DE_INFN RALT(DE_COMM) // ∞
+#define DE_ELLP RALT(DE_DOT)  // …
+#define DE_NDSH RALT(DE_MINS) // –
 
 /* Shift+Alted symbols
  * ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬─────┐
@@ -207,45 +204,44 @@
  * └─────┴────┴─────┴───────────────────────┴─────┴────┴─────┘
  */
 // Row 1
-#define DE_NOT  S(A(DE_1))    // ¬
-#define DE_RDQU S(A(DE_2))    // ”
-#define DE_PND  S(A(DE_4))    // £
-#define DE_FI   S(A(DE_5))    // ﬁ
-#define DE_BSLS S(A(DE_7))    // (backslash)
-#define DE_STIL S(A(DE_8))    // ˜
-#define DE_MDDT S(A(DE_9))    // ·
-#define DE_MACR S(A(DE_0))    // ¯
-#define DE_DOTA S(A(DE_SS))   // ˙
-#define DE_RNGA S(A(DE_ACUT)) // ˚
+#define DE_NOT  S(RALT(DE_1))    // ¬
+#define DE_RDQU S(RALT(DE_2))    // ”
+#define DE_PND  S(RALT(DE_4))    // £
+#define DE_FI   S(RALT(DE_5))    // ﬁ
+#define DE_BSLS S(RALT(DE_7))    // (backslash)
+#define DE_STIL S(RALT(DE_8))    // ˜
+#define DE_MDDT S(RALT(DE_9))    // ·
+#define DE_MACR S(RALT(DE_0))    // ¯
+#define DE_DOTA S(RALT(DE_SS))   // ˙
+#define DE_RNGA S(RALT(DE_ACUT)) // ˚
 // Row 2
-#define DE_RDAQ S(A(DE_Q))    // »
-#define DE_PERM S(A(DE_E))    // ‰
-#define DE_CEDL S(A(DE_R))    // ¸
-#define DE_DACU S(A(DE_T))    // ˝
-#define DE_CARN S(A(DE_Z))    // ˇ
-#define DE_AACU S(A(DE_U))    // Á
-#define DE_UCIR S(A(DE_I))    // Û
-#define DE_NARP S(A(DE_P))    // ∏
-#define DE_APPL S(A(DE_PLUS)) //  (Apple logo)
+#define DE_RDAQ S(RALT(DE_Q))    // »
+#define DE_PERM S(RALT(DE_E))    // ‰
+#define DE_CEDL S(RALT(DE_R))    // ¸
+#define DE_DACU S(RALT(DE_T))    // ˝
+#define DE_CARN S(RALT(DE_Z))    // ˇ
+#define DE_AACU S(RALT(DE_U))    // Á
+#define DE_UCIR S(RALT(DE_I))    // Û
+#define DE_NARP S(RALT(DE_P))    // ∏
+#define DE_APPL S(RALT(DE_PLUS)) //  (Apple logo)
 // Row 3
-#define DE_IACU S(A(DE_S))    // Í
-#define DE_TM   S(A(DE_D))    // ™
-#define DE_IDIA S(A(DE_F))    // Ï
-#define DE_IGRV S(A(DE_G))    // Ì
-#define DE_OACU S(A(DE_H))    // Ó
-#define DE_DLSI S(A(DE_J))    // ı
-#define DE_FL   S(A(DE_L))    // ﬂ
+#define DE_IACU S(RALT(DE_S))    // Í
+#define DE_TM   S(RALT(DE_D))    // ™
+#define DE_IDIA S(RALT(DE_F))    // Ï
+#define DE_IGRV S(RALT(DE_G))    // Ì
+#define DE_OACU S(RALT(DE_H))    // Ó
+#define DE_DLSI S(RALT(DE_J))    // ı
+#define DE_FL   S(RALT(DE_L))    // ﬂ
 // Row 4
-#define DE_GTEQ S(A(DE_LABK)) // ≥
-#define DE_DDAG S(A(DE_Y))    // ‡
-#define DE_UGRV S(A(DE_X))    // Ù
-#define DE_LOZN S(A(DE_V))    // ◊
-#define DE_LSAQ S(A(DE_B))    // ‹
-#define DE_RSAQ S(A(DE_N))    // ›
-#define DE_BREV S(A(DE_M))    // ˘
-#define DE_OGON S(A(DE_COMM)) // ˛
-#define DE_DIV  S(A(DE_DOT))  // ÷
-#define DE_MDSH S(A(DE_MINS)) // —
+#define DE_GTEQ S(RALT(DE_LABK)) // ≥
+#define DE_DDAG S(RALT(DE_Y))    // ‡
+#define DE_UGRV S(RALT(DE_X))    // Ù
+#define DE_LOZN S(RALT(DE_V))    // ◊
+#define DE_LSAQ S(RALT(DE_B))    // ‹
+#define DE_RSAQ S(RALT(DE_N))    // ›
+#define DE_BREV S(RALT(DE_M))    // ˘
+#define DE_OGON S(RALT(DE_COMM)) // ˛
+#define DE_DIV  S(RALT(DE_DOT))  // ÷
+#define DE_MDSH S(RALT(DE_MINS)) // —
                               //
-#pragma pop_macro("A")
 #endif

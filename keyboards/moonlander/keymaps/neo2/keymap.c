@@ -148,7 +148,7 @@ combo_t key_combos[] = {
     COMBO(layer6_left_combo_mac, MO(LAYER_6)),
     COMBO(layer6_right_combo_mac, MO(LAYER_6))
 };
-uint16_t COMBO_LEN = 5;
+uint16_t COMBO_LEN = 9;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Layer 1
@@ -319,7 +319,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case ST_CARRET:
     if (record->event.pressed) {
-      SEND_STRING(SS_TAP(X_GRAVE) SS_DELAY(10) SS_TAP(X_SPACE));
+      if (IS_MAC)
+        SEND_STRING(SS_TAP(X_NUBS) SS_DELAY(10) SS_TAP(X_SPACE));
+      else
+        SEND_STRING(SS_TAP(X_GRAVE) SS_DELAY(10) SS_TAP(X_SPACE));
 
     }
     return false;

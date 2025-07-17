@@ -26,3 +26,7 @@
 #define UNICODE_KEY_MAC KC_RALT
 
 #define LAYER_STATE_16BIT
+
+#ifdef AUDIO_ENABLE
+#define STARTUP_SONG SONG()
+#endif

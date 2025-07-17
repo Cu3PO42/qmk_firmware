@@ -35,8 +35,7 @@
  * └─────┴────┴─────┴───────────────────────┴─────┴────┴─────┘
  */
 // Row 1
-// NOTE: I switched ^ and < bec
-#define DE_CIRC KC_NUBS // ^ (dead)
+#define DE_CIRC KC_GRV  // ^ (dead)
 #define DE_1    KC_1    // 1
 #define DE_2    KC_2    // 2
 #define DE_3    KC_3    // 3
@@ -76,7 +75,7 @@
 #define DE_ADIA KC_QUOT // Ä
 #define DE_HASH KC_NUHS // #
 // Row 4
-#define DE_LABK KC_GRV // <
+#define DE_LABK KC_NUBS // <
 #define DE_Y    KC_Z    // Y
 #define DE_X    KC_X    // X
 #define DE_C    KC_C    // C

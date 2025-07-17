@@ -319,10 +319,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case ST_CARRET:
     if (record->event.pressed) {
-      if (IS_MAC)
-        SEND_STRING(SS_TAP(X_NUBS) SS_DELAY(10) SS_TAP(X_SPACE));
-      else
-        SEND_STRING(SS_TAP(X_GRAVE) SS_DELAY(10) SS_TAP(X_SPACE));
+      SEND_STRING(SS_TAP(X_GRAVE) SS_DELAY(10) SS_TAP(X_SPACE));
 
     }
     return false;
